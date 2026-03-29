@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TextInput,
   TouchableOpacity, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useHealthStore } from '../store/healthStore';
+import { useHealthStore, loadPersistedProfile, persistProfile } from '../store/healthStore';
 import { colors, fonts, radius, spacing } from '../theme/theme';
 
 // ── Input row ─────────────────────────────────────────────────────────────────
@@ -92,10 +92,25 @@ export default function SettingsScreen() {
   const [stepGoal,   setStepGoal]   = useState(String(profile.stepGoal));
   const [saved,      setSaved]      = useState(false);
 
+  // Load persisted profile on first mount
+  useEffect(() => {
+    loadPersistedProfile().then((saved) => {
+      if (!saved) return;
+      if (saved.name)       setName(saved.name);
+      if (saved.age)        setAge(String(saved.age));
+      if (saved.heightCm)   setHeightCm(String(saved.heightCm));
+      if (saved.weightKg)   setWeightKg(String(saved.weightKg));
+      if (saved.gender)     setGender(saved.gender);
+      if (saved.sleepGoalH) setSleepGoalH(String(saved.sleepGoalH));
+      if (saved.stepGoal)   setStepGoal(String(saved.stepGoal));
+      updateProfile(saved);
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const bmi = calcBMI(Number(heightCm), Number(weightKg));
 
   const handleSave = () => {
-    updateProfile({
+    const updated = {
       name:       name.trim() || 'Your Name',
       age:        Number(age)        || 55,
       heightCm:   Number(heightCm)   || 170,
@@ -103,7 +118,9 @@ export default function SettingsScreen() {
       gender,
       sleepGoalH: Number(sleepGoalH) || 8,
       stepGoal:   Number(stepGoal)   || 8000,
-    });
+    };
+    updateProfile(updated);
+    persistProfile(updated);   // save to disk
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

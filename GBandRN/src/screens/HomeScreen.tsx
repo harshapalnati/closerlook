@@ -86,11 +86,31 @@ function SectionHeader({ title }: { title: string }) {
   return <Text style={styles.sectionHeader}>{title}</Text>;
 }
 
+const MEASURE_TIMEOUT_MS = 30_000; // auto-stop any measurement after 30s
+
 // ── Main Screen ───────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const store = useHealthStore();
   const [refreshing, setRefreshing] = React.useState(false);
-  const subRefs = useRef<any[]>([]);
+  const subRefs    = useRef<any[]>([]);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Start a 30s watchdog — if measurement doesn't finish, auto-stop it */
+  const armTimeout = (
+    stopFn: () => Promise<void>,
+    key: Parameters<typeof store.setMeasuring>[0],
+  ) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(async () => {
+      try { await stopFn(); } catch {}
+      store.setMeasuring(key, false);
+      timeoutRef.current = null;
+    }, MEASURE_TIMEOUT_MS);
+  };
+
+  const clearMeasureTimeout = () => {
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+  };
 
   // Attach event listeners when connected
   useEffect(() => {
@@ -113,7 +133,10 @@ export default function HomeScreen() {
       }),
     ];
     subRefs.current = subs;
-    return () => subs.forEach((s) => s.remove());
+    return () => {
+      subs.forEach((s) => s.remove());
+      clearMeasureTimeout();
+    };
   }, []);
 
   const loadData = useCallback(async () => {
@@ -148,55 +171,65 @@ export default function HomeScreen() {
   // ── Heart rate toggle
   const toggleHeart = async () => {
     if (store.measuringHeart) {
+      clearMeasureTimeout();
       await GBand.stopHeartMeasure();
       store.setMeasuring('measuringHeart', false);
     } else {
       await GBand.startHeartMeasure();
       store.setMeasuring('measuringHeart', true);
+      armTimeout(GBand.stopHeartMeasure, 'measuringHeart');
     }
   };
 
   // ── SpO2 toggle
   const toggleSpo2 = async () => {
     if (store.measuringSpo2) {
+      clearMeasureTimeout();
       await GBand.stopSpo2Measure();
       store.setMeasuring('measuringSpo2', false);
     } else {
       await GBand.startSpo2Measure();
       store.setMeasuring('measuringSpo2', true);
+      armTimeout(GBand.stopSpo2Measure, 'measuringSpo2');
     }
   };
 
   // ── BP toggle
   const toggleBp = async () => {
     if (store.measuringBp) {
+      clearMeasureTimeout();
       await GBand.stopBpMeasure();
       store.setMeasuring('measuringBp', false);
     } else {
       await GBand.startBpMeasure();
       store.setMeasuring('measuringBp', true);
+      armTimeout(GBand.stopBpMeasure, 'measuringBp');
     }
   };
 
   // ── Temp toggle
   const toggleTemp = async () => {
     if (store.measuringTemp) {
+      clearMeasureTimeout();
       await GBand.stopTempMeasure();
       store.setMeasuring('measuringTemp', false);
     } else {
       await GBand.startTempMeasure();
       store.setMeasuring('measuringTemp', true);
+      armTimeout(GBand.stopTempMeasure, 'measuringTemp');
     }
   };
 
   // ── Wellness (Stress + Fatigue + HRV in one shot)
   const toggleWellness = async () => {
     if (store.measuringWellness) {
+      clearMeasureTimeout();
       await GBand.stopWellnessCheck();
       store.setMeasuring('measuringWellness', false);
     } else {
       await GBand.startWellnessCheck();
       store.setMeasuring('measuringWellness', true);
+      armTimeout(GBand.stopWellnessCheck, 'measuringWellness');
     }
   };
 

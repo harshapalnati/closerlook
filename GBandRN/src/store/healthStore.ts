@@ -1,4 +1,22 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const PROFILE_KEY = '@gband_profile';
+
+export async function loadPersistedProfile(): Promise<Partial<UserProfile> | null> {
+  try {
+    const raw = await AsyncStorage.getItem(PROFILE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function persistProfile(profile: UserProfile): Promise<void> {
+  try {
+    await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  } catch {}
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface FoundDevice {
