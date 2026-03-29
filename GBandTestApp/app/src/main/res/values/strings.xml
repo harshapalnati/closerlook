@@ -1,3 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GBand Test</string>
+    <string name="app_name">GBand Health</string>
+
+    <!-- Bottom nav labels -->
+    <string name="nav_home">Home</string>
+    <string name="nav_device">Device</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home screen -->
+    <string name="section_heart">Heart Rate</string>
+    <string name="section_activity">Today\'s Activity</string>
+    <string name="section_sleep">Last Night\'s Sleep</string>
+    <string name="section_vitals">Vitals</string>
+    <string name="label_steps">Steps</string>
+    <string name="label_distance">Distance</string>
+    <string name="label_calories">Calories</string>
+    <string name="label_heart_rate">Heart Rate</string>
+    <string name="label_spo2">Blood Oxygen</string>
+    <string name="label_blood_pressure">Blood Pressure</string>
+    <string name="label_sleep_total">Total Sleep</string>
+    <string name="label_sleep_deep">Deep Sleep</string>
+    <string name="label_sleep_light">Light Sleep</string>
+    <string name="label_wake_count">Times Awake</string>
+    <string name="label_battery">Battery</string>
+    <string name="unit_bpm">bpm</string>
+    <string name="unit_steps">steps</string>
+    <string name="unit_km">km</string>
+    <string name="unit_kcal">kcal</string>
+    <string name="unit_percent">%</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="btn_refresh">Refresh Data</string>
+    <string name="btn_measure_heart">Measure Now</string>
+    <string name="no_data">--</string>
+    <string name="not_connected_hint">Connect your G Band to see data</string>
+
+    <!-- Device screen -->
+    <string name="device_title">G Band Device</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_disconnected">Not Connected</string>
+    <string name="status_scanning">Scanning\u2026</string>
+    <string name="status_connecting">Connecting\u2026</string>
+    <string name="btn_scan">Scan for Device</string>
+    <string name="btn_connect">Connect</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="label_device_name">Device Name</string>
+    <string name="label_firmware">Firmware</string>
+    <string name="label_mac">MAC Address</string>
+    <string name="no_devices_found">No devices found. Make sure your G Band is nearby and turned on.</string>
+    <string name="scan_timeout">Scan complete.</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="section_profile">Your Profile</string>
+    <string name="section_body">Body Measurements</string>
+    <string name="section_goals">Daily Goals</string>
+    <string name="label_name">Your Name</string>
+    <string name="label_age">Age</string>
+    <string name="label_sex">Sex</string>
+    <string name="label_height">Height (cm)</string>
+    <string name="label_weight">Weight (kg)</string>
+    <string name="label_step_goal">Daily Step Goal</string>
+    <string name="label_sleep_goal">Sleep Target (hours)</string>
+    <string name="btn_save">Save Settings</string>
+    <string name="settings_saved">Settings saved!</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="hint_name">e.g. John</string>
+    <string name="hint_age">e.g. 65</string>
+    <string name="hint_height">e.g. 170</string>
+    <string name="hint_weight">e.g. 75</string>
+    <string name="hint_step_goal">e.g. 8000</string>
+    <string name="hint_sleep_goal">e.g. 8</string>
 </resources>
