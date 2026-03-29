@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { enableScreens } from 'react-native-screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+enableScreens();
 import { colors, fonts, spacing } from '../theme/theme';
 import HomeScreen from '../screens/HomeScreen';
 import DeviceScreen from '../screens/DeviceScreen';

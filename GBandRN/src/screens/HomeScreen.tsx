@@ -133,7 +133,8 @@ export default function HomeScreen() {
     } catch (e: any) {
       console.warn('loadData error', e?.message);
     }
-  }, [store.isConnected]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.isConnected]); // Zustand store setters are stable refs — no need in deps
 
   // Load on first connect
   useEffect(() => { if (store.isConnected) loadData(); }, [store.isConnected]);

@@ -1,14 +1,15 @@
 import Foundation
 import CoreBluetooth
 
-// VeepooBleSDK imports — framework must be in ios/Frameworks/VeepooBleSDK.framework
-// Download from: https://github.com/HBandSDK/iOS_Ble_SDK
-@_implementationOnly import VeepooBleSDK
+// VeepooBleSDK — framework must be in ios/Frameworks/VeepooBleSDK.framework
+// Run scripts/setup_ios_sdk.sh to download it, then pod install
+import VeepooBleSDK
 
 @objc(GBandModule)
 class GBandModule: RCTEventEmitter {
 
-  private var foundMacs = Set<String>()
+  private var foundMacs          = Set<String>()
+  private var scannedPeripherals = [String: VPPeripheralModel]()
   private var isMeasuringHeart    = false
   private var isMeasuringSpo2     = false
   private var isMeasuringBp       = false
@@ -38,6 +39,7 @@ class GBandModule: RCTEventEmitter {
   @objc func startScan(_ resolve: @escaping RCTPromiseResolveBlock,
                        rejecter reject: @escaping RCTPromiseRejectBlock) {
     foundMacs.removeAll()
+    scannedPeripherals.removeAll()
     emit("onScanStatus", ["status": "scanning"])
 
     VPBleCentralManager.sharedBleManager().veepooSDKStartScanDeviceAndReceiveScanningDevice { [weak self] peripheral in
@@ -45,6 +47,7 @@ class GBandModule: RCTEventEmitter {
       let mac = p.deviceAddress ?? p.peripheral?.identifier.uuidString ?? ""
       guard !mac.isEmpty, !self.foundMacs.contains(mac) else { return }
       self.foundMacs.insert(mac)
+      self.scannedPeripherals[mac] = p   // retain model so connectDevice can use it
       self.emit("onDeviceFound", [
         "name": p.deviceName ?? "Unknown",
         "mac":  mac,
@@ -72,9 +75,8 @@ class GBandModule: RCTEventEmitter {
                            rejecter reject: @escaping RCTPromiseRejectBlock) {
     VPBleCentralManager.sharedBleManager().veepooSDKStopScanDevice()
 
-    // Find the peripheral model matching this mac
-    guard let peripheral = findPeripheral(mac: mac) else {
-      reject("NOT_FOUND", "Device not found — scan first", nil)
+    guard let peripheral = scannedPeripherals[mac] else {
+      reject("NOT_FOUND", "Device not found — scan first, then tap the device", nil)
       return
     }
 
@@ -325,12 +327,6 @@ class GBandModule: RCTEventEmitter {
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────
-  private func findPeripheral(mac: String) -> VPPeripheralModel? {
-    // The SDK stores the last scanned peripheral list in memory
-    // We look it up by matching address
-    return nil // SDK connects by passing the model directly — see connectDevice
-  }
-
   private func todayString() -> String {
     let f = DateFormatter()
     f.dateFormat = "yyyy-MM-dd"

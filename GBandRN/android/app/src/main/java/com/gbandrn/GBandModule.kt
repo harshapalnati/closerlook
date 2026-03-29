@@ -211,7 +211,7 @@ class GBandModule(private val reactContext: ReactApplicationContext) :
     @ReactMethod
     fun readOriginData(promise: Promise) {
         VPOperateManager.getInstance().readOriginData(
-            {},
+            { _ -> },
             object : IOriginData3Listener {
                 private var lastHr = -1
                 private var lastSys = -1
